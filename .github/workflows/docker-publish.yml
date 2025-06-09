@@ -4,9 +4,13 @@ on:
   push:
     branches: [main]
 
+env:
+  IMAGE_NAME: ${{ secrets.DOCKER_USERNAME }}/react-hello
+
 jobs:
   build:
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout Code
         uses: actions/checkout@v3
@@ -18,8 +22,26 @@ jobs:
           password: ${{ secrets.DOCKER_PASSWORD }}
 
       - name: Build and Push Docker Image
+        id: build-image
         uses: docker/build-push-action@v5
         with:
           context: .
           push: true
-          tags: ${{ secrets.DOCKER_USERNAME }}/react-hello:latest
+          tags: ${{ env.IMAGE_NAME }}:${{ github.sha }}
+
+      - name: Clone Flux Repo
+        run: |
+          git clone https://x-access-token:${{ secrets.FLUX_REPO_TOKEN }}@github.com/<your-username>/flux-react-deploy.git
+          cd flux-react-deploy/apps/react
+          echo "Updating deployment image to ${{ env.IMAGE_NAME }}:${{ github.sha }}"
+          
+          # Install yq to edit YAML
+          sudo apt-get update && sudo apt-get install -y yq
+
+          # Update image tag in deployment.yaml
+          yq e -i '.spec.template.spec.containers[0].image = "${{ env.IMAGE_NAME }}:${{ github.sha }}"' deployment.yaml
+
+          git config user.name "GitHub Actions"
+          git config user.email "actions@github.com"
+          git commit -am "Update image to ${{ env.IMAGE_NAME }}:${{ github.sha }}"
+          git push origin main
