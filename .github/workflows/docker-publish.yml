@@ -29,17 +29,18 @@ jobs:
           push: true
           tags: ${{ env.IMAGE_NAME }}:${{ github.sha }}
 
-      - name: Clone Flux Repo
+      - name: Clone Flux Repo and Update Image Tag
         run: |
           git clone https://x-access-token:${{ secrets.FLUX_REPO_TOKEN }}@github.com/Lachitha/flux-react-deploy.git
           cd flux-react-deploy/apps/react
           echo "Updating deployment image to ${{ env.IMAGE_NAME }}:${{ github.sha }}"
           
-          # Install yq to edit YAML
-          sudo apt-get update && sudo apt-get install -y yq
+          # Install yq v4
+          sudo wget https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64 -O /usr/bin/yq
+          sudo chmod +x /usr/bin/yq
 
           # Update image tag in deployment.yaml
-          yq e -i '.spec.template.spec.containers[0].image = "${{ env.IMAGE_NAME }}:${{ github.sha }}"' deployment.yaml
+          yq -i '.spec.template.spec.containers[0].image = "${{ env.IMAGE_NAME }}:${{ github.sha }}"' deployment.yaml
 
           git config user.name "GitHub Actions"
           git config user.email "actions@github.com"
