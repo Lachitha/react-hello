@@ -40,7 +40,7 @@ jobs:
           sudo chmod +x /usr/bin/yq
 
           # Update image tag in deployment.yaml
-          yq -i '.spec.template.spec.containers[0].image = "${{ env.IMAGE_NAME }}:${{ github.sha }}"' deployment.yaml
+          yq -i '.spec.template.spec.containers[0].image = "${{ env.IMAGE_NAME }}:${{ github.sha }}"' react-deployment.yaml
 
           git config user.name "GitHub Actions"
           git config user.email "actions@github.com"
