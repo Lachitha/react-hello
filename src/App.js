@@ -4,7 +4,8 @@ import './App.css';
 function App() {
   return (
     <div>
-      <h1>Hello, Minikube + FluxCD!</h1>
+      <h1>Hello, Minikube + FluxCD! Lachitha
+      </h1>
     </div>
   );
 }
