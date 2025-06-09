@@ -31,7 +31,7 @@ jobs:
 
       - name: Clone Flux Repo
         run: |
-          git clone https://x-access-token:${{ secrets.FLUX_REPO_TOKEN }}@github.com/<your-username>/flux-react-deploy.git
+          git clone https://x-access-token:${{ secrets.FLUX_REPO_TOKEN }}@github.com/Lachitha/flux-react-deploy.git
           cd flux-react-deploy/apps/react
           echo "Updating deployment image to ${{ env.IMAGE_NAME }}:${{ github.sha }}"
           
